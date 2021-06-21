@@ -1,5 +1,5 @@
 const socket = io("http://localhost:3000");
-let roomId = "";
+let idChatRoom = "";
 
 function onLoad() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -35,6 +35,10 @@ function onLoad() {
         addUser(user);
       }
     })
+  });
+
+  socket.on("message", (data) => {
+    console.log("message", data);
   })
 
 }
@@ -62,7 +66,24 @@ document.getElementById("users_list").addEventListener("click", (event) => {
     const idUser = event.target.getAttribute("idUser");
     
     socket.emit("start_chat", {idUser}, (data) => {
-      roomId = data.room.idChatRoom;
+      idChatRoom = data.room.idChatRoom;
+    })
+  }
+});
+
+document.getElementById("user_message").addEventListener("keypress", (e) => {
+  if(e.key === 'Enter') {
+    const message = e.target.value;
+
+    e.target.value = "";
+
+    const data = {
+      message,
+      idChatRoom,
+    };
+
+    socket.emit("message", (data) => {
+
     })
   }
 })
