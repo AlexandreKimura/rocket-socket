@@ -18,9 +18,7 @@ app.use(express.static(path.join(__dirname, "..", "public")));
 
 const io = new Server(server);
 
-io.on("connection", async (socket) => {
-  //console.log("Socket", socket);
-})
+io.on("connection", async (socket) => {});
 
 app.get("/", (request, response) =>{
   return response.json({

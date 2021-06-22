@@ -34,6 +34,7 @@ io.on("connect", socket => {
   });
 
   socket.on("start_chat", async (data, callback) => {
+
     const createChatRoomService = container.resolve(CreateChatRoomService);
     const getChatRoomByUsersService = container.resolve(GetChatRoomByUsersService);
     const getUserBySocketIdService = container.resolve(GetUserBySocketIdService);
@@ -53,13 +54,12 @@ io.on("connect", socket => {
     socket.join(room.idChatRoom);
 
     const messages = await getMessagesByChatRoomService.execute(room.idChatRoom);
-
-
+   
     callback({ room, messages });
   });
 
   socket.on("message", async data => {
-
+    
     const getUserBySocketIdService = container.resolve(GetUserBySocketIdService);
 
     const createMessageService = container.resolve(CreateMessageService);
@@ -79,13 +79,12 @@ io.on("connect", socket => {
     });
 
     const room = await getChatRoomByIdService.execute(data.idChatRoom);
-
-    const userFrom = room.idUsers.find(response => String(response._id) !== String(user.id))
+    const userFrom = room.idUsers.find(response => String(response._id) !== String(user._id));
 
     io.to(userFrom.socket_id).emit("notification", {
       newMessage: true,
       roomId: data.idChatRoom,
       from: user
-    })
+    });
   });
 });

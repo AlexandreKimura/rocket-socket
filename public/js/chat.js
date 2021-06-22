@@ -43,21 +43,21 @@ function onLoad() {
     }
   });
 
-  socket.on("notification", data => {
+  socket.on("notification", (data) => {
     if(data.roomId !== idChatRoom) {
       const user = document.getElementById(`user_${data.from._id}`);
 
       user.insertAdjacentHTML("afterbegin", `
-        <div clas="notification"></div>
+        <div class="notification"></div>
       `);
     }
-  })
+  });
 
 }
 
 function addMessage(data) {
   const divMessageUser = document.getElementById("message_user");
-
+  
   divMessageUser.innerHTML += `
   <span class="user_name user_name_date">
     <img
@@ -65,10 +65,10 @@ function addMessage(data) {
       src=${data.user.avatar}
     />
     <strong>${data.user.name} &nbsp; </strong>
-    <span> ${dayjs(data.user.created_at).format("DD/MM/YYYY HH:mm")}</span></span
+    <span> ${dayjs(data.message.created_at).format("DD/MM/YYYY HH:mm")}</span></span
   >
   <div class="messages">
-    <span class="chat_message"> ${data.user.text}</span>
+    <span class="chat_message"> ${data.message.text}</span>
   </div>
   `
 }
@@ -96,13 +96,15 @@ document.getElementById("users_list").addEventListener("click", (event) => {
   const inputMessage = document.getElementById("user_message");
   inputMessage.classList.remove("hidden");
 
-  document.querySelector("li.user_name_list").forEach(item => item.classList.remove("user_in_focus"));
+  document.querySelectorAll("li.user_name_list")
+    .forEach(item => item.classList
+    .remove("user_in_focus"));
 
   document.getElementById("message_user").innerHTML = "";
   if(event.target && event.target.matches("li.user_name_list")) {
     const idUser = event.target.getAttribute("idUser");
-
-    e.target.classList.add("user_in_focus");
+    
+    event.target.classList.add("user_in_focus");
 
     const notification = document.querySelector(`#user_${idUser} .notification`);
     if(notification) {
@@ -111,13 +113,11 @@ document.getElementById("users_list").addEventListener("click", (event) => {
     
     socket.emit("start_chat", {idUser}, (response) => {
       idChatRoom = response.room.idChatRoom;
-
       response.messages.forEach(message => {
         const data = {
           message,
           user: message.to,
         }
-
         addMessage(data);
       })
     })
@@ -134,10 +134,7 @@ document.getElementById("user_message").addEventListener("keypress", (e) => {
       message,
       idChatRoom,
     };
-
-    socket.emit("message", (data) => {
-
-    })
+    socket.emit("message", data);
   }
 })
 

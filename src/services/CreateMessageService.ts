@@ -14,8 +14,9 @@ class CreateMessageService {
     const message = await Message.create({
       to,
       text,
-      roomId
+      room_id: roomId
     })
+    return message;
   }
 }
 
